@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="v1no.odfm_admin.mapper.AdminMapper">
+    <resultMap id="adminPO" type="v1no.odfm_common.domainModel.PO.AdminPO">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="note" column="note"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into admin(username, password, nickname, phone, email, note)
+        value (#{username}, #{password}, #{nickname}, #{phone}, #{email}, #{note})
+        <selectKey keyProperty="id" order="AFTER" resultType="Long">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <update id="update">
+        update admin
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="note != null">
+                note = #{note},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from admin where id = #{id} and username = #{username} and password = #{password}
+    </delete>
+
+    <select id="getProfile" resultMap="adminPO">
+        select id, nickname, email, phone from admin
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="username != null and username != '' and password != null and password != ''">
+                and username = #{username} and password = #{password}
+            </if>
+        </where>
+    </select>
+
+    <select id="getDetail" resultMap="adminPO">
+        select id, username, nickname, password, phone, email, note from admin
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="username != null and username != '' and password != null and password != ''">
+                and username = #{username} and password = #{password}
+            </if>
+        </where>
+    </select>
+</mapper>

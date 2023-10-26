@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="v1no.odfm_admin.mapper.AdminBusinessMapper">
+    <resultMap id="adminBusinessPO" type="v1no.odfm_common.domainModel.PO.AdminBusinessPO">
+        <result property="adminId" column="admin_id"/>
+        <result property="initTime" column="init_time"/>
+        <result property="accountType" column="account_type"/>
+        <result property="name" column="name"/>
+        <result property="verification" column="verification"/>
+        <result property="address" column="address"/>
+        <result property="field" column="field"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into admin_business(admin_id, init_time, account_type, name, verification, address, field)
+        value (#{adminId}, now(), #{accountType}, #{name}, #{verification}, #{address}, #{field})
+    </insert>
+
+    <update id="update">
+        update admin_business
+        <set>
+            <if test="initTime != null and initTime != ''">
+                init_time = #{initTime},
+            </if>
+            <if test="accountType != null and accountType != ''">
+                account_type = #{accountType},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="verification != null">
+                verification = #{verification},
+            </if>
+            <if test="address != null">
+                address = #{address},
+            </if>
+            <if test="field != null">
+                field = #{field},
+            </if>
+        </set>
+        where admin_id = #{adminId}
+    </update>
+
+    <delete id="delete">
+        delete from admin_business where admin_id = #{id}
+    </delete>
+
+    <select id="get" resultMap="adminBusinessPO">
+        select admin_id, init_time, account_type, name, verification, address, field from admin_business
+        where admin_id = #{id}
+    </select>
+
+</mapper>

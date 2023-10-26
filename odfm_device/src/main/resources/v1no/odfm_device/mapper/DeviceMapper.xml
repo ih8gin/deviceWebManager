@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="v1no.odfm_device.mapper.DeviceMapper">
+    <resultMap id="devicePO" type="v1no.odfm_common.domainModel.PO.DevicePO">
+        <id property="id" column="id"/>
+        <result property="adminId" column="admin_id"/>
+        <result property="verificationCode" column="verification_code"/>
+        <result property="type" column="type"/>
+        <result property="activationTime" column="activation_time"/>
+        <result property="expirationTime" column="expiration_time"/>
+        <result property="note" column="note"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into device(admin_id, verification_code, type, activation_time, expiration_time, note)
+        value (#{adminId}, #{verificationCode}, #{type}, #{activationTime}, #{expirationTime}, #{note})
+        <selectKey keyProperty="id" order="AFTER" resultType="Long">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <update id="update">
+        update device
+        <set>
+            <if test="adminId != null">
+                admin_id = #{adminId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="expirationTime != null">
+                expiration_time = #{expirationTime},
+            </if>
+            <if test="note != null">
+                note = #{note},
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="verificationCode != null and verificationCode != ''">
+                and verification_code = #{verificationCode}
+            </if>
+        </where>
+    </update>
+
+    <delete id="delete">
+        delete from device
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="verificationCode != null and verificationCode != ''">
+                and verification_code = #{verificationCode}
+            </if>
+        </where>
+    </delete>
+
+    <select id="getProfile" resultMap="devicePO">
+        select id, admin_id, verification_code from device
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="verificationCode != null and verificationCode != ''">
+                and verification_code = #{verificationCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="getList" resultMap="devicePO">
+        select id, admin_id, verification_code, type, activation_time, expiration_time, note from device
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="adminId != null">
+                and admin_id = #{adminId}
+            </if>
+            <if test="verificationCode != null and verificationCode != ''">
+                and verification_code = #{verificationCode}
+            </if>
+<!--            <if test="type != null">-->
+<!--                and type = #{type}-->
+<!--            </if>-->
+            <if test="type != null and type.length != 0">
+                and type in
+                <foreach collection="type" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="activationTimeFrom != null">
+                and activation_time &gt;= #{activationTimeFrom}
+            </if>
+            <if test="activationTimeTo != null">
+                and activation_time &lt;= #{activationTimeTo}
+            </if>
+            <if test="expirationTimeFrom != null">
+                and expiration_time &gt;= #{expirationTimeFrom}
+            </if>
+            <if test="expirationTimeTo != null">
+                and expiration_time &lt;= #{expirationTimeTo}
+            </if>
+        </where>
+    </select>
+</mapper>
